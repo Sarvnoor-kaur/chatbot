@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Medical Chatbot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .chat-container {
+        width: 400px;
+        background: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .chat-container:hover {
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px);
+      }
+
+      .chat-header {
+        background: linear-gradient(135deg, #0072ff, #00c6ff);
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .chat-header:hover {
+        background: linear-gradient(135deg, #005bcf, #00a7d9);
+      }
+
+      .chat-box {
+        height: 400px;
+        overflow-y: auto;
+        padding: 10px;
+        background: #f9f9f9;
+      }
+
+      /* Example predefined messages */
+      .message {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+        max-width: 80%;
+        word-wrap: break-word;
+        animation: fadeIn 0.5s;
+        position: relative;
+        transition: transform 0.2s ease;
+      }
+
+      .message:hover {
+        transform: translateY(-2px);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .user-message:hover::after {
+        content: "You";
+        position: absolute;
+        font-size: 10px;
+        bottom: -15px;
+        right: 10px;
+        color: #6c757d;
+      }
+
+      .chat-input {
+        display: flex;
+        padding: 10px;
+        background: #fff;
+        border-top: 1px solid #ddd;
+      }
+
+      .chat-input input {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid #ccc;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        font-size: 14px;
+      }
+
+      .chat-input input:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+      }
+
+      .chat-input input:hover {
+        border-color: #7eb6ff;
+      }
+
+      .chat-input button {
+        margin-left: 10px;
+        padding: 10px 15px;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        font-weight: bold;
+      }
+
+      .chat-input button:hover {
+        background: linear-gradient(135deg, #0069d9, #004494);
+        transform: scale(1.05);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .chat-input button:active {
+        transform: scale(0.95);
+      }
+
+      /* Menu options for quick responses */
+      .quick-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px;
+        border-top: 1px solid #eee;
+        background: #f9f9f9;
+      }
+
+      .quick-option {
+        background: #e7f1ff;
+        border: 1px solid #b8daff;
+        color: #007bff;
+        padding: 8px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .quick-option:hover {
+        background: #cce5ff;
+        border-color: #007bff;
+        transform: translateY(-2px);
+      }
+
+      /* Typing indicator */
+      
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.5;
+        }
+      }
+
+      .corner-signature {
+        position: fixed;
+        bottom: 10px;
+        right: 15px;
+        font-size: 15px;
+        color: #100f0f;
+        font-style: italic;
+        opacity: 0.7;
+        z-index: 1000;
+      }
+      
+
+      /* File upload option */
+      .file-upload {
+        position: relative;
+        overflow: hidden;
+        margin-right: 10px;
+        width: 30px;
+        height: 30px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .file-upload:hover {
+        background: #e0e0e0;
+      }
+
+      .file-upload input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+
+      .file-upload::after {
+        content: "📎";
+        font-size: 16px;
+      }
+
+      /* Emoji selector toggle */
+      .emoji-toggle {
+        width: 30px;
+        height: 30px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .emoji-toggle:hover {
+        background: #e0e0e0;
+        transform: scale(1.1);
+      }
+
+      .emoji-toggle::after {
+        content: "😊";
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">AI Medical Assistant</div>
+      <div class="chat-box" id="chat-box">
+        <!-- Bot welcome message -->
+        <div class="message bot-message">
+          Hello! I'm your AI Medical Assistant. Please describe your symptoms,
+          and I'll try to help. Remember, I'm not a replacement for professional
+          medical advice.
+        </div>
+
+        <!-- Example conversation -->
+
+        <!-- Typing indicator (for visual effect) -->
+        <div class="typing-indicator"></div>
+      </div>
+
+      <!-- Quick options for common symptoms -->
+      <div class="quick-options">
+        <div class="quick-option">Headache</div>
+        <div class="quick-option">Fever</div>
+        <div class="quick-option">Cough</div>
+        <div class="quick-option">Nausea</div>
+        <div class="quick-option">Back Pain</div>
+      </div>
+
+      <div class="chat-input">
+        <div class="file-upload">
+          <input type="file" title="Upload an image" />
+        </div>
+        <div class="emoji-toggle" title="Select emoji"></div>
+        <input
+          type="text"
+          id="user-input"
+          placeholder="Enter your symptoms..."
+          autofocus
+        />
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
+
+    <div class="corner-signature"><h1>Made By - Sarvnoor kaur</h1></div>
+
+  </body>
+</html>
+
+<script src="./index.js"></script>
